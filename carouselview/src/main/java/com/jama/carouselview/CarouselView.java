@@ -30,6 +30,7 @@ public class CarouselView extends FrameLayout {
   private CarouselViewListener carouselViewListener;
   private CarouselScrollListener carouselScrollListener;
   private IndicatorAnimationType indicatorAnimationType;
+  private CarouselViewAdapter adapter;
   private OffsetType offsetType;
   private SnapHelper snapHelper;
   private boolean enableSnapping;
@@ -118,12 +119,17 @@ public class CarouselView extends FrameLayout {
     this.layoutManager.isOffsetStart(this.getCarouselOffset() == OffsetType.START);
     if (this.getScaleOnScroll()) this.layoutManager.setScaleOnScroll(true);
     carouselRecyclerView.setLayoutManager(this.layoutManager);
-    this.carouselRecyclerView.setAdapter(new CarouselViewAdapter(getCarouselViewListener(), getResource(), getSize(), carouselRecyclerView, this.getSpacing(), this.getCarouselOffset() == OffsetType.CENTER));
+    this.adapter = new CarouselViewAdapter(getCarouselViewListener(), getResource(), getSize(), carouselRecyclerView, this.getSpacing(), this.getCarouselOffset() == OffsetType.CENTER);
+    this.carouselRecyclerView.setAdapter(adapter);
     if (this.enableSnapping) {
       this.snapHelper.attachToRecyclerView(this.carouselRecyclerView);
     }
     this.setScrollListener();
     this.enableAutoPlay();
+  }
+
+  public CarouselViewAdapter getAdapter() {
+    return adapter;
   }
 
   private void setScrollListener() {

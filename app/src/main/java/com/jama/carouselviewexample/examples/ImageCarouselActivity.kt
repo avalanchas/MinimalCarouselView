@@ -1,10 +1,10 @@
 package com.jama.carouselviewexample.examples
 
-import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jama.carouselview.CarouselScrollListener
 import com.jama.carouselviewexample.R
@@ -38,7 +38,7 @@ class ImageCarouselActivity : AppCompatActivity() {
             hideIndicator(true)
             setCarouselViewListener { view, position ->
                 val imageView = view.findViewById<ImageView>(R.id.imageView)
-                imageView.setImageDrawable(resources.getDrawable(images[position]))
+                imageView.setImageDrawable(ContextCompat.getDrawable(context, images[position]))
                 val textView = view.findViewById<TextView>(R.id.textViewTitle)
                 textView.text = imageTitle[position]
             }

@@ -50,10 +50,8 @@ public class CarouselLinearLayoutManager extends LinearLayoutManager {
         child.setScaleX(position);
         child.setScaleY(position);
       }
-      return scrolled;
-    } else {
-      return scrolled;
     }
+    return scrolled;
   }
 
   void isOffsetStart(boolean isOffsetStart) {

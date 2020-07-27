@@ -1,9 +1,10 @@
 package com.jama.carouselviewexample.examples
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.jama.carouselviewexample.R
 import kotlinx.android.synthetic.main.activity_start_carousel.*
 
@@ -27,7 +28,7 @@ class StartCarouselActivity : AppCompatActivity() {
             hideIndicator(true)
             setCarouselViewListener { view, position ->
                 val imageView = view.findViewById<ImageView>(R.id.imageView)
-                imageView.setImageDrawable(resources.getDrawable(movies[position]))
+                imageView.setImageDrawable(ContextCompat.getDrawable(context, movies[position]))
                 val textView = view.findViewById<TextView>(R.id.textViewTitle)
                 textView.text = moviesTitles[position]
             }
@@ -44,7 +45,7 @@ class StartCarouselActivity : AppCompatActivity() {
             hideIndicator(true)
             setCarouselViewListener { view, position ->
                 val imageView = view.findViewById<ImageView>(R.id.imageView)
-                imageView.setImageDrawable(resources.getDrawable(trendingMovies[position]))
+                imageView.setImageDrawable(ContextCompat.getDrawable(context, trendingMovies[position]))
                 val textView = view.findViewById<TextView>(R.id.textViewTitle)
                 textView.text = trendingTitle[position]
             }
