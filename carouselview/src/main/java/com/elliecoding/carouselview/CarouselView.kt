@@ -15,54 +15,74 @@ import com.elliecoding.carouselview.enums.OffsetType
 import com.rd.PageIndicatorView
 import com.rd.animation.type.AnimationType
 
-
-@Suppress("unused") // This is a library, external consumers will use the public methods
+// This is a library, external consumers will use the public methods
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class CarouselView : FrameLayout {
-    private var pageIndicatorView: PageIndicatorView? = null
-    private var carouselRecyclerView: RecyclerView? = null
+    private lateinit var indicatorView: PageIndicatorView
+    private lateinit var carouselRecyclerView: RecyclerView
     private var layoutManager: CarouselLinearLayoutManager? = null
+    private var offsetType: OffsetType? = null
+    private var snapHelper: SnapHelper? = null
+    private val autoPlayHandler: Handler by lazy {
+        Handler(Looper.myLooper()!!)
+    }
+
     var carouselViewListener: CarouselViewListener? = null
     var carouselScrollListener: CarouselScrollListener? = null
-    var indicatorAnimationType: IndicatorAnimationType? = null
+
+    /**
+     * Animation type for the indicator below the carousel. Defaults to
+     * [IndicatorAnimationType.SLIDE].
+     */
+    var indicatorAnimationType: IndicatorAnimationType = IndicatorAnimationType.SLIDE
         set(indicatorAnimationType) {
             field = indicatorAnimationType
             when (indicatorAnimationType) {
-                IndicatorAnimationType.DROP -> pageIndicatorView!!.setAnimationType(
-                    AnimationType.DROP
-                )
-                IndicatorAnimationType.FILL -> pageIndicatorView!!.setAnimationType(AnimationType.FILL)
-                IndicatorAnimationType.NONE -> pageIndicatorView!!.setAnimationType(AnimationType.NONE)
-                IndicatorAnimationType.SWAP -> pageIndicatorView!!.setAnimationType(AnimationType.SWAP)
-                IndicatorAnimationType.WORM -> pageIndicatorView!!.setAnimationType(AnimationType.WORM)
-                IndicatorAnimationType.COLOR -> pageIndicatorView!!.setAnimationType(AnimationType.COLOR)
-                IndicatorAnimationType.SCALE -> pageIndicatorView!!.setAnimationType(AnimationType.SCALE)
-                IndicatorAnimationType.SLIDE -> pageIndicatorView!!.setAnimationType(AnimationType.SLIDE)
-                IndicatorAnimationType.THIN_WORM -> pageIndicatorView!!.setAnimationType(
-                    AnimationType.THIN_WORM
-                )
-                IndicatorAnimationType.SCALE_DOWN -> pageIndicatorView!!.setAnimationType(
-                    AnimationType.SCALE_DOWN
-                )
-                else -> throw IllegalArgumentException("Unknown indicatorAnimationType $indicatorAnimationType")
+                IndicatorAnimationType.DROP -> indicatorView.setAnimationType(AnimationType.DROP)
+                IndicatorAnimationType.FILL -> indicatorView.setAnimationType(AnimationType.FILL)
+                IndicatorAnimationType.NONE -> indicatorView.setAnimationType(AnimationType.NONE)
+                IndicatorAnimationType.SWAP -> indicatorView.setAnimationType(AnimationType.SWAP)
+                IndicatorAnimationType.WORM -> indicatorView.setAnimationType(AnimationType.WORM)
+                IndicatorAnimationType.COLOR -> indicatorView.setAnimationType(AnimationType.COLOR)
+                IndicatorAnimationType.SCALE -> indicatorView.setAnimationType(AnimationType.SCALE)
+                IndicatorAnimationType.SLIDE -> indicatorView.setAnimationType(AnimationType.SLIDE)
+                IndicatorAnimationType.THIN_WORM -> indicatorView.setAnimationType(AnimationType.THIN_WORM)
+                IndicatorAnimationType.SCALE_DOWN -> indicatorView.setAnimationType(AnimationType.SCALE_DOWN)
             }
         }
-    private var offsetType: OffsetType? = null
-    private var snapHelper: SnapHelper? = null
 
     var enableSnapping = false
+
+    /**
+     * Enables or disables autoplay. Changes to this field will be applied immediately, such that
+     * you can toggle the feature on or off at any time.
+     */
     var autoPlay = false
-    var autoPlayDelay = 0
-    private var autoPlayHandler: Handler? = null
+        set(value) {
+            if (autoPlay != value) {
+                field = value
+                verifyAutoPlay()
+            }
+        }
+
+    /**
+     * Long millisecond value for the time it takes before the autoplay will continue to the next
+     * carousel item. It is recommended that you use [java.util.concurrent.TimeUnit.toMillis] to set
+     * this value for readability. Setting this to any value <= 0 will set `[autoPlay] = false`
+     */
+    var autoPlayDelayMillis = 0L
+        set(value) {
+            field = value
+            if (value <= 0L) {
+                autoPlay = false
+            }
+        }
     var scaleOnScroll = false
     var resource = 0
-        set(resource) {
-            field = resource
-            isResourceSet = true
-        }
     var size = 0
         set(size) {
             field = size
-            pageIndicatorView!!.count = size
+            indicatorView.count = size
         }
     var spacing = 0
     var currentItem = 0
@@ -74,9 +94,8 @@ class CarouselView : FrameLayout {
             } else {
                 item
             }
-            carouselRecyclerView!!.smoothScrollToPosition(currentItem)
+            carouselRecyclerView.smoothScrollToPosition(currentItem)
         }
-    private var isResourceSet = false
 
     constructor(context: Context) : super(context) {
         init(null)
@@ -89,11 +108,9 @@ class CarouselView : FrameLayout {
     private fun init(attributeSet: AttributeSet?) {
         val inflater = LayoutInflater.from(context)
         val carouselView = inflater.inflate(R.layout.view_carousel, this)
-        autoPlayHandler = Handler(Looper.myLooper()!!)
-
         carouselRecyclerView = carouselView.findViewById(R.id.carousel_recycler_view)
-        pageIndicatorView = carouselView.findViewById(R.id.page_indicator_view)
-        carouselRecyclerView!!.setHasFixedSize(false)
+        indicatorView = carouselView.findViewById(R.id.page_indicator_view)
+        carouselRecyclerView.setHasFixedSize(false)
         initializeAttributes(attributeSet)
     }
 
@@ -107,8 +124,8 @@ class CarouselView : FrameLayout {
             scaleOnScroll =
                 attributes.getBoolean(R.styleable.CarouselView_scaleOnScroll, false)
             autoPlay = attributes.getBoolean(R.styleable.CarouselView_setAutoPlay, false)
-            autoPlayDelay =
-                attributes.getInteger(R.styleable.CarouselView_setAutoPlayDelay, 2500)
+            autoPlayDelayMillis =
+                attributes.getInteger(R.styleable.CarouselView_setAutoPlayDelay, 2500).toLong()
             carouselOffset =
                 getOffset(attributes.getInteger(R.styleable.CarouselView_carouselOffset, 0))
             val resourceId = attributes.getResourceId(R.styleable.CarouselView_resource, 0)
@@ -143,9 +160,9 @@ class CarouselView : FrameLayout {
 
     fun hideIndicator(hide: Boolean) {
         if (hide) {
-            pageIndicatorView!!.visibility = GONE
+            indicatorView.visibility = GONE
         } else {
-            pageIndicatorView!!.visibility = VISIBLE
+            indicatorView.visibility = VISIBLE
         }
     }
 
@@ -158,8 +175,8 @@ class CarouselView : FrameLayout {
         layoutManager = CarouselLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         layoutManager!!.isOffsetStart(carouselOffset == OffsetType.START)
         if (scaleOnScroll) layoutManager!!.setScaleOnScroll(true)
-        carouselRecyclerView!!.layoutManager = layoutManager
-        carouselRecyclerView!!.adapter = CarouselViewAdapter(
+        carouselRecyclerView.layoutManager = layoutManager
+        carouselRecyclerView.adapter = CarouselViewAdapter(
             carouselViewListener,
             resource,
             size,
@@ -168,15 +185,14 @@ class CarouselView : FrameLayout {
             carouselOffset == OffsetType.CENTER
         )
         if (enableSnapping) {
-            carouselRecyclerView!!.onFlingListener = null
+            carouselRecyclerView.onFlingListener = null
             snapHelper!!.attachToRecyclerView(carouselRecyclerView)
         }
         setScrollListener()
-        enableAutoPlay()
     }
 
     private fun setScrollListener() {
-        carouselRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        carouselRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 val centerView = snapHelper!!.findSnapView(layoutManager)
@@ -185,7 +201,7 @@ class CarouselView : FrameLayout {
                     carouselScrollListener!!.onScrollStateChanged(recyclerView, newState, position)
                 }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    pageIndicatorView!!.selection = position
+                    indicatorView.selection = position
                     currentItem = position
                 }
             }
@@ -199,19 +215,34 @@ class CarouselView : FrameLayout {
         })
     }
 
-    private fun enableAutoPlay() {
-        autoPlayHandler!!.postDelayed(object : Runnable {
-            override fun run() {
-                if (autoPlay) {
-                    currentItem = if (size - 1 == currentItem) {
-                        0
-                    } else {
-                        currentItem + 1
-                    }
-                    autoPlayHandler!!.postDelayed(this, autoPlayDelay.toLong())
+    private val autoPlayRunnable = object : Runnable {
+        override fun run() {
+            if (autoPlay) {
+                currentItem = if (size - 1 == currentItem) {
+                    0
+                } else {
+                    currentItem + 1
                 }
+                autoPlayHandler.postDelayed(this, autoPlayDelayMillis)
             }
-        }, autoPlayDelay.toLong())
+        }
+    }
+
+    private fun verifyAutoPlay() {
+        if (autoPlay) {
+            enableAutoPlay()
+        } else {
+            disableAutoPlay()
+        }
+    }
+
+    private fun enableAutoPlay() {
+        autoPlayHandler.removeCallbacks(autoPlayRunnable)
+        autoPlayHandler.postDelayed(autoPlayRunnable, autoPlayDelayMillis)
+    }
+
+    private fun disableAutoPlay() {
+        autoPlayHandler.removeCallbacks(autoPlayRunnable)
     }
 
     private var carouselOffset: OffsetType?
@@ -225,28 +256,28 @@ class CarouselView : FrameLayout {
             }
         }
     private var indicatorRadius: Int
-        get() = pageIndicatorView!!.radius
+        get() = indicatorView.radius
         set(radius) {
-            pageIndicatorView!!.radius = radius
+            indicatorView.radius = radius
         }
     private var indicatorPadding: Int
-        get() = pageIndicatorView!!.padding
+        get() = indicatorView.padding
         set(padding) {
-            pageIndicatorView!!.padding = padding
+            indicatorView.padding = padding
         }
     private var indicatorSelectedColor: Int
-        get() = pageIndicatorView!!.selectedColor
+        get() = indicatorView.selectedColor
         set(color) {
-            pageIndicatorView!!.selectedColor = color
+            indicatorView.selectedColor = color
         }
     private var indicatorUnselectedColor: Int
-        get() = pageIndicatorView!!.unselectedColor
+        get() = indicatorView.unselectedColor
         set(color) {
-            pageIndicatorView!!.unselectedColor = color
+            indicatorView.unselectedColor = color
         }
 
     private fun validate() {
-        check(isResourceSet) { "Please add a resource layout to populate the CarouselView" }
+        check(resource != 0) { "Please add a resource layout to populate the CarouselView" }
     }
 
     private fun getAnimation(value: Int): IndicatorAnimationType {
