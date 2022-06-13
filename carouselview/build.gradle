@@ -46,11 +46,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Contains annotations and other Android basics we use
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.github.romandanylyk:PageIndicatorView:v.1.0.3'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }
 

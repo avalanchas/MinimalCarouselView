@@ -8,20 +8,20 @@
         <attr name="setAutoPlay" format="boolean" />
         <attr name="setAutoPlayDelay" format="integer" />
         <attr name="carouselOffset" format="enum">
-            <enum name="start" value="0"/>
-            <enum name="center" value="1"/>
+            <enum name="start" value="0" />
+            <enum name="center" value="1" />
         </attr>
         <attr name="indicatorAnimationType" format="enum">
-            <enum name="none" value="0"/>
-            <enum name="fill" value="1"/>
-            <enum name="drop" value="2"/>
-            <enum name="swap" value="3"/>
-            <enum name="worm" value="4"/>
-            <enum name="color" value="5"/>
-            <enum name="scale" value="6"/>
-            <enum name="slide" value="7"/>
-            <enum name="thinWorm" value="8"/>
-            <enum name="scaleDown" value="9"/>
+            <enum name="none" value="0" />
+            <enum name="fill" value="1" />
+            <enum name="drop" value="2" />
+            <enum name="swap" value="3" />
+            <enum name="worm" value="4" />
+            <enum name="color" value="5" />
+            <enum name="scale" value="6" />
+            <enum name="slide" value="7" />
+            <enum name="thinWorm" value="8" />
+            <enum name="scaleDown" value="9" />
         </attr>
         <attr name="indicatorRadius" format="integer" />
         <attr name="indicatorPadding" format="integer" />
