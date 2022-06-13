@@ -43,7 +43,7 @@ static def computeVersionName() {
     if (branchName.startsWith("feature/")) {
         return String.format("SNAPSHOT%s", appendix)
     }
-    return String.format('%d.%d.%d%s', 2, 2, 0, appendix)
+    return String.format('%d.%d.%d%s', 2, 0, 0, appendix)
 }
 
 static def getVersionAppendix() {
