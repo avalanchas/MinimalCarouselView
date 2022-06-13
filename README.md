@@ -25,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.elliecoding:MinimalCarouselView:1.1.0'
+    implementation 'com.github.avalanchas:MinimalCarouselView:2.0.0'
 }
 ```
 

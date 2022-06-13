@@ -1,9 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'maven-publish'
 }
 
 android {
+    namespace = 'com.elliecoding.carouselview'
+
     compileSdkVersion project_compileSdkVersion
 
     defaultConfig {
@@ -26,6 +29,12 @@ android {
     compileOptions {
         sourceCompatibility project_java_version
         targetCompatibility project_java_version
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
