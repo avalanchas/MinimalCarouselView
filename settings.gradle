@@ -1,2 +1,1 @@
-include ':app', ':carouselview'
-rootProject.name='CarouselViewExample'
+include ':carouselview'

@@ -1,21 +1,14 @@
-# CarouselView
+# MinimalCarouselView
 
-[![](https://jitpack.io/v/jama5262/CarouselView.svg)](https://jitpack.io/#jama5262/CarouselView)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An android carousel library for RecyclerView
+A minimal android carousel library for RecyclerView
 
-#### [Examples](https://github.com/jama5262/CarouselView/tree/master/app/src/main/java/com/jama/carouselviewexample/examples)
+#### [Examples](https://github.com/avalanchas/MinmalCarouselView/tree/master/app/src/main/java/de/radio/carouselviewexample/examples)
 
 ## Demos
 
-Full Image | Item Centered | Item Start
------------- | ------------- | -------------
-<img src="https://github.com/jama5262/CarouselView/blob/master/app/src/main/res/drawable/image1.gif" alt="alt text" height="500px"> | <img src="https://github.com/jama5262/CarouselView/blob/master/app/src/main/res/drawable/image2.gif" alt="alt text" height="500px"> | <img src="https://github.com/jama5262/CarouselView/blob/master/app/src/main/res/drawable/image3.gif" height="500px">
-
 ## Installation
-
-Current Version: [![](https://jitpack.io/v/jama5262/CarouselView.svg)](https://jitpack.io/#jama5262/CarouselView)
 
 #### Gradle
 
@@ -32,30 +25,9 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.jama5262:CarouselView:1.1.0'
+    implementation 'com.elliecoding:MinimalCarouselView:1.1.0'
 }
 ```
-
-#### Maven
-
-```
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-```
-<dependency>
-    <groupId>com.github.jama5262</groupId>
-	<artifactId>CarouselView</artifactId>
-    <version>1.1.0</version>
-</dependency>
-```
-
-Great the project has been setup 👍
 
 ## Usage
 
@@ -64,8 +36,8 @@ Great the project has been setup 👍
 Below is all the XML attributes that the CarouselView has
 
 ```xml
-<com.jama.carouselview.CarouselView
-    android:layout_width="match_parent"
+
+<com.elliecoding.carouselview.CarouselView android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:enableSnapping="true"
     app:scaleOnScroll="false"
@@ -79,7 +51,7 @@ Below is all the XML attributes that the CarouselView has
     app:indicatorUnselectedColor="@color/colorPrimary"
     app:size="10"
     app:spacing="10"
-    app:resource="@layout/image_carousel_item"/>
+    app:resource="@layout/image_carousel_item" />
 ```
 
 #### Kotlin Implementation
@@ -87,8 +59,10 @@ Below is all the XML attributes that the CarouselView has
 ```Kotlin
 class CarouselActivity : AppCompatActivity() {
 
-    private val images = arrayListOf(R.drawable.boardwalk_by_the_ocean, 
-            R.drawable.journal_and_coffee_at_table, R.drawable.tying_down_tent_fly)
+    private val images = arrayListOf(
+        R.drawable.boardwalk_by_the_ocean,
+        R.drawable.journal_and_coffee_at_table, R.drawable.tying_down_tent_fly
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,32 +93,32 @@ class CarouselActivity : AppCompatActivity() {
 ```java
 class CenteredCarouselActivity extends AppCompatActivity {
 
-  private int[] images = {R.drawable.boardwalk_by_the_ocean,
-      R.drawable.journal_and_coffee_at_table, R.drawable.tying_down_tent_fly};
+    private int[] images = {R.drawable.boardwalk_by_the_ocean,
+            R.drawable.journal_and_coffee_at_table, R.drawable.tying_down_tent_fly};
 
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_centered_carousel);
-    
-    CarouselView carouselView = findViewById(R.id.carouselView);
-    
-    carouselView.setSize(images.length);
-    carouselView.setResource(R.layout.center_carousel_item);
-    carouselView.setAutoPlay(true);
-    carouselView.setIndicatorAnimationType(IndicatorAnimationType.THIN_WORM);
-    carouselView.setCarouselOffset(OffsetType.CENTER);
-    carouselView.setCarouselViewListener(new CarouselViewListener() {
-      @Override
-      public void onBindView(View view, int position) {
-        // Example here is setting up a full image carousel
-        ImageView imageView = view.findViewById(R.id.imageView);
-        imageView.setImageDrawable(getResources().getDrawable(images[position]));
-      }
-    });
-    // After you finish setting up, show the CarouselView
-    carouselView.show();
-  }
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_centered_carousel);
+
+        CarouselView carouselView = findViewById(R.id.carouselView);
+
+        carouselView.setSize(images.length);
+        carouselView.setResource(R.layout.center_carousel_item);
+        carouselView.setAutoPlay(true);
+        carouselView.setIndicatorAnimationType(IndicatorAnimationType.THIN_WORM);
+        carouselView.setCarouselOffset(OffsetType.CENTER);
+        carouselView.setCarouselViewListener(new CarouselViewListener() {
+            @Override
+            public void onBindView(View view, int position) {
+                // Example here is setting up a full image carousel
+                ImageView imageView = view.findViewById(R.id.imageView);
+                imageView.setImageDrawable(getResources().getDrawable(images[position]));
+            }
+        });
+        // After you finish setting up, show the CarouselView
+        carouselView.show();
+    }
 }
 ```
 
@@ -174,9 +148,6 @@ Below are all the methods available
 ## Support
 
 Reach out to me at one of the following places!
-
-- Email at jama3137@gmail.com
-- Twitter [timedjama5262](https://twitter.com/timedjama5262)
 
 ## License
 
