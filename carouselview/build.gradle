@@ -31,6 +31,10 @@ android {
         targetCompatibility project_java_version
     }
 
+    kotlinOptions {
+        jvmTarget = project_java_version
+    }
+
     publishing {
         singleVariant('release') {
             withSourcesJar()
