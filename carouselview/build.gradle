@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion project_compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion project_minSdkVersion
+        targetSdkVersion project_targetSdkVersion
+        versionCode project_versionCode
+        versionName project_versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -24,8 +24,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility project_java_version
+        targetCompatibility project_java_version
     }
 }
 

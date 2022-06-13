@@ -13,7 +13,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
     }
-
 }
 
 allprojects {
@@ -26,4 +25,57 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    project_minSdkVersion = 17
+    project_targetSdkVersion = 33
+    project_compileSdkVersion = 33
+    project_versionName = computeVersionName()
+    project_versionCode = computeVersionCode()
+    project_java_version = JavaVersion.VERSION_11
+}
+
+static def computeVersionName() {
+    // Basic <major>.<minor>.<patch> version name
+    String appendix = getVersionAppendix()
+    String branchName = getGitBranchName()
+    if (branchName.startsWith("feature/")) {
+        return String.format("SNAPSHOT%s", appendix)
+    }
+    return String.format('%d.%d.%d%s', 1, 0, 0, appendix)
+}
+
+static def getVersionAppendix() {
+    String branchName = getGitBranchName()
+    String appendix = ""
+    if (branchName == "develop") {
+        appendix = "-alpha"
+    } else if (branchName.startsWith("release/")) {
+        appendix = "-beta"
+    } else if (branchName.startsWith("feature/")) {
+        // remove the word "feature/" with a substring, then remove the ticket number - if present - for maximum readability
+        appendix = "-" + branchName.substring(8).replaceFirst("(?i)(EC)-\\d+_", "")
+    }
+    return appendix
+}
+
+static def getGitBranchName() {
+    // Returns the Gitlab CI branch name when launched on the CI, the local script result otherwise
+    return System.env.CI_COMMIT_REF_NAME ?: getGitBranchNameLocal()
+}
+
+static def getGitBranchNameLocal() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    return branch
+}
+
+static def computeVersionCode() {
+    // The CI_PIPELINE_IID is a unique id of the current pipeline scoped to project, so unique over all branches
+    // The IID will only bet set in Gitlab environment. For a local build, the version code will always be 1
+    return System.env.CI_PIPELINE_IID ? Integer.valueOf(System.env.CI_PIPELINE_IID) : 1
 }
