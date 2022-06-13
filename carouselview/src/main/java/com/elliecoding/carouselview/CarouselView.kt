@@ -21,9 +21,9 @@ class CarouselView : FrameLayout {
     private var pageIndicatorView: PageIndicatorView? = null
     private var carouselRecyclerView: RecyclerView? = null
     private var layoutManager: CarouselLinearLayoutManager? = null
-    private var carouselViewListener: CarouselViewListener? = null
+    var carouselViewListener: CarouselViewListener? = null
     var carouselScrollListener: CarouselScrollListener? = null
-    private var indicatorAnimationType: IndicatorAnimationType? = null
+    var indicatorAnimationType: IndicatorAnimationType? = null
         set(indicatorAnimationType) {
             field = indicatorAnimationType
             when (indicatorAnimationType) {
@@ -46,15 +46,15 @@ class CarouselView : FrameLayout {
                 else -> throw IllegalArgumentException("Unknown indicatorAnimationType $indicatorAnimationType")
             }
         }
-    private var adapter: CarouselViewAdapter? = null
     private var offsetType: OffsetType? = null
     private var snapHelper: SnapHelper? = null
-    private var enableSnapping = false
+
+    var enableSnapping = false
     var autoPlay = false
     var autoPlayDelay = 0
     private var autoPlayHandler: Handler? = null
-    private var scaleOnScroll = false
-    private var resource = 0
+    var scaleOnScroll = false
+    var resource = 0
         set(resource) {
             field = resource
             isResourceSet = true
@@ -64,7 +64,7 @@ class CarouselView : FrameLayout {
             field = size
             pageIndicatorView!!.count = size
         }
-    private var spacing = 0
+    var spacing = 0
     var currentItem = 0
         set(item) {
             field = if (item < 0) {
@@ -103,7 +103,7 @@ class CarouselView : FrameLayout {
                 attributeSet,
                 R.styleable.CarouselView, 0, 0
             )
-            enableSnapping(attributes.getBoolean(R.styleable.CarouselView_enableSnapping, true))
+            enableSnapping = attributes.getBoolean(R.styleable.CarouselView_enableSnapping, true)
             scaleOnScroll =
                 attributes.getBoolean(R.styleable.CarouselView_scaleOnScroll, false)
             autoPlay = attributes.getBoolean(R.styleable.CarouselView_setAutoPlay, false)
@@ -141,10 +141,6 @@ class CarouselView : FrameLayout {
         }
     }
 
-    private fun enableSnapping(enable: Boolean) {
-        enableSnapping = enable
-    }
-
     fun hideIndicator(hide: Boolean) {
         if (hide) {
             pageIndicatorView!!.visibility = GONE
@@ -163,12 +159,16 @@ class CarouselView : FrameLayout {
         layoutManager!!.isOffsetStart(carouselOffset == OffsetType.START)
         if (scaleOnScroll) layoutManager!!.setScaleOnScroll(true)
         carouselRecyclerView!!.layoutManager = layoutManager
-        adapter = CarouselViewAdapter(
-            carouselViewListener, resource, size,
-            carouselRecyclerView, spacing, carouselOffset == OffsetType.CENTER
+        carouselRecyclerView!!.adapter = CarouselViewAdapter(
+            carouselViewListener,
+            resource,
+            size,
+            carouselRecyclerView,
+            spacing,
+            carouselOffset == OffsetType.CENTER
         )
-        carouselRecyclerView!!.adapter = adapter
         if (enableSnapping) {
+            carouselRecyclerView!!.onFlingListener = null
             snapHelper!!.attachToRecyclerView(carouselRecyclerView)
         }
         setScrollListener()
