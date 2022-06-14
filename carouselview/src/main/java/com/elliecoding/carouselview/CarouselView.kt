@@ -167,8 +167,9 @@ class CarouselView : FrameLayout {
     }
 
     override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
         autoPlay = false
+        carouselRecyclerView.clearOnScrollListeners()
+        super.onDetachedFromWindow()
     }
 
     private fun setAdapter() {
@@ -195,14 +196,20 @@ class CarouselView : FrameLayout {
         carouselRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                val centerView = snapHelper!!.findSnapView(layoutManager)
-                val position = layoutManager!!.getPosition(centerView!!)
-                if (carouselScrollListener != null) {
-                    carouselScrollListener!!.onScrollStateChanged(recyclerView, newState, position)
-                }
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    indicatorView.selection = position
-                    currentItem = position
+                if (layoutManager != null) {
+                    val centerView = snapHelper!!.findSnapView(layoutManager)
+                    val position = layoutManager!!.getPosition(centerView!!)
+                    if (carouselScrollListener != null) {
+                        carouselScrollListener!!.onScrollStateChanged(
+                            recyclerView,
+                            newState,
+                            position
+                        )
+                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        indicatorView.selection = position
+                        currentItem = position
+                    }
                 }
             }
 
