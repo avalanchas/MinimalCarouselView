@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -196,20 +197,30 @@ class CarouselView : FrameLayout {
         carouselRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (layoutManager != null) {
+                if (layoutManager != null && snapHelper != null) {
                     val centerView = snapHelper!!.findSnapView(layoutManager)
-                    val position = layoutManager!!.getPosition(centerView!!)
-                    if (carouselScrollListener != null) {
-                        carouselScrollListener!!.onScrollStateChanged(
-                            recyclerView,
-                            newState,
-                            position
-                        )
+                    if (centerView != null) {
+                        setPosition(centerView, recyclerView, newState)
                     }
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        indicatorView.selection = position
-                        currentItem = position
-                    }
+                }
+            }
+
+            private fun setPosition(
+                centerView: View,
+                recyclerView: RecyclerView,
+                newState: Int
+            ) {
+                val position = layoutManager!!.getPosition(centerView)
+                if (carouselScrollListener != null) {
+                    carouselScrollListener!!.onScrollStateChanged(
+                        recyclerView,
+                        newState,
+                        position
+                    )
+                }
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    indicatorView.selection = position
+                    currentItem = position
                 }
             }
 
