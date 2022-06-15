@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.elliecoding.carouselview.control.CarouselLinearLayoutManager
+import com.elliecoding.carouselview.control.CarouselSnapHelper
+import com.elliecoding.carouselview.control.CarouselViewAdapter
 import com.elliecoding.carouselview.enums.IndicatorAnimationType
 import com.elliecoding.carouselview.enums.OffsetType
 import com.rd.PageIndicatorView
