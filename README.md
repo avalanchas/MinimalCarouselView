@@ -3,7 +3,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A minimal android carousel library for RecyclerView
+A minimal android carousel library for RecyclerView, originally made by https://github.com/jama5262/
 
 #### [Examples](https://github.com/avalanchas/MinmalCarouselView/tree/master/app/src/main/java/de/radio/carouselviewexample/examples)
 
