@@ -180,6 +180,9 @@ class CarouselView : FrameLayout {
         layoutManager = CarouselLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         layoutManager!!.isOffsetStart(carouselOffset == OffsetType.START)
         if (scaleOnScroll) layoutManager!!.setScaleOnScroll(true)
+
+        // Careful, this call internally triggers a call to the onScrollStateChangeListener with a
+        // ScrollState.None, if a listener was previously attached
         carouselRecyclerView.layoutManager = layoutManager
         carouselRecyclerView.adapter = CarouselViewAdapter(
             carouselViewListener,
@@ -200,8 +203,9 @@ class CarouselView : FrameLayout {
         carouselRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (layoutManager != null && snapHelper != null) {
-                    val centerView = snapHelper!!.findSnapView(layoutManager)
+                val helper = snapHelper
+                if (layoutManager != null && helper != null) {
+                    val centerView = helper.findSnapView(layoutManager)
                     if (centerView != null) {
                         setPosition(centerView, recyclerView, newState)
                     }
